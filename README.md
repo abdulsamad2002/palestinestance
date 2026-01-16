@@ -26,11 +26,6 @@ Palestine Stance is a transparent, crowd-powered platform that helps people make
 4. **Results**: View their stance (Pro-Palestine, Neutral, or Pro-Israel) with all supporting sources
 5. **Database Growth**: Every search automatically adds to the database for faster future lookups
 
-### Stance Categories
-
-- **Pro-Palestine**: Public figures who have publicly supported Palestine through statements, actions, or donations
-- **Neutral/Silent**: Public figures with no clear public position or who have remained silent on the issue
-- **Pro-Israel**: Public figures who have publicly supported Israel
 
 ### Technology
 
