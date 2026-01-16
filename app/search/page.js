@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 
-export default function SearchPage() {
+function SearchContent() {
   const searchParams = useSearchParams();
   const query = searchParams.get('q') || '';
   
@@ -117,12 +117,13 @@ export default function SearchPage() {
       {results.length > 0 && (
         <>
           <p className="text-gray-600 mb-8">
-            Found {results.length} {results.length === 1 ? 'result' : 'results'} 
+            Found {results.length} {results.length === 1 ? 'result' : 'results'} in our database
           </p>
           <div className="space-y-4">
             {results.map((celebrity) => (
-              <div
+              <Link
                 key={celebrity._id}
+                href={`/celebrity/${celebrity._id}`}
                 className="block p-6 bg-white rounded-lg border-2 border-gray-100 hover:border-green-200 hover:shadow-md transition"
               >
                 <div className="flex justify-between items-start mb-3">
@@ -156,7 +157,7 @@ export default function SearchPage() {
                   {celebrity.sources.length} source{celebrity.sources.length !== 1 ? 's' : ''} • 
                   {celebrity.aiConfidence}% confidence
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </>
@@ -166,6 +167,12 @@ export default function SearchPage() {
       {aiResult && (
         <div className="space-y-4">
           <div className="flex items-center gap-2 mb-4">
+            <span className="px-3 py-1 bg-blue-100 text-blue-700 text-xs font-semibold rounded-full">
+              🔍 Fresh Research
+            </span>
+            <span className="text-sm text-gray-500">
+              This information has been saved to our database
+            </span>
           </div>
 
           <div className="p-6 bg-white rounded-lg border-2 border-blue-200 shadow-md">
@@ -221,11 +228,12 @@ export default function SearchPage() {
             </div>
 
             {aiResult._id && (
-              <div
+              <Link
+                href={`/celebrity/${aiResult._id}`}
                 className="mt-4 inline-block px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 font-medium"
               >
                 View Full Details →
-              </div>
+              </Link>
             )}
           </div>
         </div>
@@ -241,5 +249,20 @@ export default function SearchPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function SearchPage() {
+  return (
+    <Suspense fallback={
+      <div className="max-w-4xl mx-auto px-4 py-12">
+        <div className="text-center py-20">
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
+          <p className="mt-4 text-gray-600">Loading...</p>
+        </div>
+      </div>
+    }>
+      <SearchContent />
+    </Suspense>
   );
 }
