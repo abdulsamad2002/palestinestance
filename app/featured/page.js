@@ -56,9 +56,8 @@ export default async function FeaturedPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {serialized.map((celebrity) => (
-              <Link
+              <div
                 key={celebrity._id}
-                href={`/celebrity/${celebrity._id}`}
                 className="bg-white rounded-lg border-2 border-gray-100 hover:border-green-300 hover:shadow-lg transition p-6 group"
               >
                 {/* Featured Badge */}
@@ -95,7 +94,7 @@ export default async function FeaturedPage() {
                     )}
                   </span>
                 </div>
-              </Link>
+              </div>
             ))}
           </div>
         </>
