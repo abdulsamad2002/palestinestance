@@ -121,9 +121,9 @@ function SearchContent() {
           </p>
           <div className="space-y-4">
             {results.map((celebrity) => (
-              <Link
+              <div
                 key={celebrity._id}
-                href={`/celebrity/${celebrity._id}`}
+                
                 className="block p-6 bg-white rounded-lg border-2 border-gray-100 hover:border-green-200 hover:shadow-md transition"
               >
                 <div className="flex justify-between items-start mb-3">
@@ -157,7 +157,7 @@ function SearchContent() {
                   {celebrity.sources.length} source{celebrity.sources.length !== 1 ? 's' : ''} • 
                   {celebrity.aiConfidence}% confidence
                 </div>
-              </Link>
+              </div>
             ))}
           </div>
         </>
@@ -228,12 +228,11 @@ function SearchContent() {
             </div>
 
             {aiResult._id && (
-              <Link
-                href={`/celebrity/${aiResult._id}`}
+              <div
                 className="mt-4 inline-block px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 font-medium"
               >
                 View Full Details →
-              </Link>
+              </div>
             )}
           </div>
         </div>
