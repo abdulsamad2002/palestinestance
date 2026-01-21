@@ -1,12 +1,12 @@
 import mongoose from 'mongoose';
 
-const CelebritySchema = new mongoose.Schema({
+const CompanySchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
     index: true,
   },
-  profession: {
+  industry: {
     type: String,
     required: true,
   },
@@ -40,18 +40,9 @@ const CelebritySchema = new mongoose.Schema({
     type: String,
     default: null,
   },
-  verifications: {
-    type: Number,
-    default: 0,
-  },
-  disputes: {
-    type: Number,
-    default: 0,
-  },
-  featured: {
-    type: Boolean,
-    default: false,
-    index: true,
+  parentCompany: {
+    type: String,
+    default: null,
   },
   summary: {
     type: String,
@@ -62,8 +53,8 @@ const CelebritySchema = new mongoose.Schema({
 });
 
 // Create text index for search
-CelebritySchema.index({ name: 'text', profession: 'text' });
+CompanySchema.index({ name: 'text', industry: 'text' });
 
-const Celebrity = mongoose.models.Celebrity || mongoose.model('Celebrity', CelebritySchema);
+const Company = mongoose.models.Company || mongoose.model('Company', CompanySchema);
 
-export default Celebrity;
+export default Company;

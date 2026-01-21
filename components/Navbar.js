@@ -36,12 +36,13 @@ export default function Navbar() {
               <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-green-600 transition-all group-hover:w-full"></span>
             </Link>
 
-            {/* <Link
-              href="/submit"
-              className="px-5 py-2.5 bg-green-600 text-white rounded-lg font-medium transition-all hover:bg-green-700 hover:shadow-lg hover:scale-105 active:scale-95"
+            <Link
+              href="/campaigns"
+              className="px-4 py-2 text-gray-700 hover:text-green-600 font-medium rounded-lg transition-all hover:bg-green-50 relative group"
             >
-              Add Celebrity
-            </Link> */}
+              Campaigns
+              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-green-600 transition-all group-hover:w-full"></span>
+            </Link>
 
             <Link
               href="/about"
@@ -95,21 +96,13 @@ export default function Navbar() {
               Featured
             </Link>
 
-            {/* <Link
-              href="/browse"
+            <Link
+              href="/campaigns"
               className="block px-4 py-2.5 text-gray-700 hover:bg-green-50 hover:text-green-600 rounded-lg transition-all font-medium"
               onClick={() => setIsMenuOpen(false)}
             >
-              Browse
+              Campaigns
             </Link>
-
-            <Link
-              href="/submit"
-              className="block mx-2 px-4 py-2.5 bg-green-600 text-white rounded-lg text-center font-medium transition-all hover:bg-green-700 hover:shadow-md active:scale-95"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Add Celebrity
-            </Link> */}
 
             <Link
               href="/about"

@@ -17,11 +17,11 @@ function SearchContent() {
 
   useEffect(() => {
     if (query && !isSearching.current) {
-      searchCelebrity();
+      searchEntity();
     }
   }, [query]);
 
-  async function searchCelebrity() {
+  async function searchEntity() {
     if (isSearching.current) return; // Prevent concurrent calls
     
     isSearching.current = true;
@@ -120,42 +120,59 @@ function SearchContent() {
             Found {results.length} {results.length === 1 ? 'result' : 'results'} in our database
           </p>
           <div className="space-y-4">
-            {results.map((celebrity) => (
+            {results.map((entity) => (
               <div
-                key={celebrity._id}
-                
+                key={entity._id}
                 className="block p-6 bg-white rounded-lg border-2 border-gray-100 hover:border-green-200 hover:shadow-md transition"
               >
                 <div className="flex justify-between items-start mb-3">
-                  <div>
-                    <h2 className="text-xl font-semibold text-gray-900">
-                      {celebrity.name}
-                    </h2>
-                    <p className="text-gray-600 mt-1">{celebrity.profession}</p>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <h2 className="text-xl font-semibold text-gray-900">
+                        {entity.name}
+                      </h2>
+                      <span className={`px-2 py-0.5 text-[10px] font-bold uppercase rounded tracking-wider ${
+                        entity.type === 'company' 
+                        ? 'bg-purple-100 text-purple-700 border border-purple-200' 
+                        : 'bg-orange-100 text-orange-700 border border-orange-200'
+                      }`}>
+                        {entity.type || 'person'}
+                      </span>
+                    </div>
+                    <p className="text-gray-600">{entity.profession}</p>
+                    {entity.parentCompany && (
+                      <p className="text-xs text-gray-500 mt-1">Parent: {entity.parentCompany}</p>
+                    )}
                   </div>
                   <div className="flex flex-col items-end gap-2">
-                    <span className="px-3 py-1 bg-green-100 text-green-700 text-xs font-semibold rounded-full">
-                      ✓ Verified
+                    <span className="px-3 py-1 bg-green-50 text-green-700 text-xs font-semibold rounded-full border border-green-100">
+                      ✓ Database Verified
                     </span>
                     <span
                       className={`px-4 py-2 rounded-full text-sm font-medium ${
-                        celebrity.stance === 'pro'
+                        entity.stance === 'pro'
                           ? 'bg-green-100 text-green-800'
-                          : celebrity.stance === 'against'
+                          : entity.stance === 'against'
                           ? 'bg-red-100 text-red-800'
                           : 'bg-gray-100 text-gray-800'
                       }`}
                     >
-                      {celebrity.stance === 'pro' ? '✓ Pro-Palestine' : 
-                       celebrity.stance === 'against' ? '✗ Pro-Israel' : 
+                      {entity.stance === 'pro' ? '✓ Pro-Palestine' : 
+                       entity.stance === 'against' ? '✗ Pro-Israel' : 
                        '○ Neutral/Silent'}
                     </span>
                   </div>
                 </div>
+
+                {entity.summary && (
+                  <p className="text-sm text-gray-600 mb-4 line-clamp-2 italic">
+                    &quot;{entity.summary}&quot;
+                  </p>
+                )}
                 
-                <div className="text-sm text-gray-500">
-                  {celebrity.sources.length} source{celebrity.sources.length !== 1 ? 's' : ''} • 
-                  {celebrity.aiConfidence}% confidence
+                <div className="text-sm text-gray-500 pt-3 border-t border-gray-50">
+                  {entity.sources.length} source{entity.sources.length !== 1 ? 's' : ''} • 
+                  {entity.aiConfidence || entity.confidence}% confidence
                 </div>
               </div>
             ))}
@@ -177,11 +194,23 @@ function SearchContent() {
 
           <div className="p-6 bg-white rounded-lg border-2 border-blue-200 shadow-md">
             <div className="flex justify-between items-start mb-4">
-              <div>
-                <h2 className="text-2xl font-bold text-gray-900">
-                  {aiResult.name}
-                </h2>
-                <p className="text-gray-600 mt-1 text-lg">{aiResult.profession}</p>
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-1">
+                  <h2 className="text-2xl font-bold text-gray-900">
+                    {aiResult.name}
+                  </h2>
+                  <span className={`px-2 py-0.5 text-[10px] font-bold uppercase rounded tracking-wider ${
+                    aiResult.type === 'company' 
+                    ? 'bg-purple-100 text-purple-700 border border-purple-200' 
+                    : 'bg-orange-100 text-orange-700 border border-orange-200'
+                  }`}>
+                    {aiResult.type || 'person'}
+                  </span>
+                </div>
+                <p className="text-gray-600 text-lg">{aiResult.profession}</p>
+                {aiResult.parentCompany && (
+                  <p className="text-sm text-gray-500 mt-1">Parent Company: {aiResult.parentCompany}</p>
+                )}
               </div>
               <span
                 className={`px-6 py-3 rounded-full text-lg font-semibold ${

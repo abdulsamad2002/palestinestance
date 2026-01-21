@@ -1,95 +1,73 @@
-'use client';
-
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import dbConnect from '@/lib/mongodb';
+import Celebrity from '@/models/Celebrity';
+import SearchForm from '@/components/SearchForm';
 
-export default function Home() {
-  const [search, setSearch] = useState('');
-  const [topCelebrities, setTopCelebrities] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const router = useRouter();
+async function getTopCelebrities() {
+  try {
+    await dbConnect();
+    // Get top 3 pro-Palestine celebrities with indexing support
+    const celebrities = await Celebrity.find({
+      status: 'approved',
+      stance: 'pro',
+    })
+    .sort({ 
+      featured: -1,
+      aiConfidence: -1
+    })
+    .limit(3)
+    .lean();
 
-  useEffect(() => {
-    fetchTopCelebrities();
-  }, []);
-
-  async function fetchTopCelebrities() {
-    try {
-      const response = await fetch('/api/top-celebrities');
-      const data = await response.json();
-      setTopCelebrities(data.celebrities || []);
-    } catch (error) {
-      console.error('Error fetching top celebrities:', error);
-    } finally {
-      setLoading(false);
-    }
+    return celebrities.map(c => ({
+      ...c,
+      _id: c._id.toString(),
+    }));
+  } catch (error) {
+    console.error('Error fetching top celebrities:', error);
+    return [];
   }
+}
 
-  const handleSearch = (e) => {
-    e.preventDefault();
-    if (search.trim()) {
-      router.push(`/search?q=${encodeURIComponent(search)}`);
-    }
-  };
+export default async function Home() {
+  const topCelebrities = await getTopCelebrities();
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-green-50 to-white">
       {/* Hero Section */}
-      <div className="max-w-5xl mx-auto px-4 py-4">
-        <h1 className="text-5xl font-bold text-center mb-4 text-green-900">
+      <div className="max-w-5xl mx-auto px-4 py-8 md:py-16">
+        <h1 className="text-6xl font-black text-center mb-6 text-green-900 tracking-tightest">
           Palestine Stance
         </h1>
-        <p className="text-center text-gray-600 mb-8 text-lg">
-          Search for prominent personalities, brands, and other entities to determine their stance on the Palestine cause.
+        <p className="text-center text-gray-600 mb-10 text-xl max-w-2xl mx-auto leading-relaxed">
+          The verified database of public figures and brands. Discover stances with AI-powered research and linked evidence.
         </p>
         
-        <form onSubmit={handleSearch} className="max-w-2xl mx-auto">
-          <div className="flex gap-2">
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search"
-              className="flex-1 px-6 py-4 text-lg border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
-            />
-            <button
-              type="submit"
-              className="px-8 py-4 bg-green-600 text-white rounded-lg hover:bg-green-700 font-semibold transition"
-            >
-              Search
-            </button>
-          </div>
-        </form>
+        <SearchForm />
       </div>
 
       {/* Hall of Fame Section */}
-      {!loading && topCelebrities.length > 0 && (
+      {topCelebrities.length > 0 && (
         <div className="max-w-6xl mx-auto px-4 py-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-3">
+            <h2 className="text-4xl font-extrabold text-gray-900 mb-4 tracking-tight">
               🏆 Hall of Fame
             </h2>
-            <p className="text-gray-600">
-              Most prominent voices for Palestine
+            <p className="text-gray-600 text-lg">
+              Recognizing the most prominent voices for justice and humanity
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {topCelebrities.map((celebrity, index) => (
               <div
                 key={celebrity._id}
-                className="relative rounded-xl border-2 border-gray-200 hover:border-green-400 hover:shadow-2xl transition-all p-8 group overflow-hidden"
+                className="relative rounded-2xl border-2 border-gray-100 bg-white hover:border-green-400 hover:shadow-2xl transition-all duration-300 p-8 group overflow-hidden"
               >
-                {/* Palestinian Flag Background */}
-                <div className="absolute inset-0 flex flex-col">
-                  {/* Black stripe */}
+                {/* Palestinian Flag Background Animation/Effect */}
+                <div className="absolute inset-0 flex flex-col opacity-5 group-hover:opacity-10 transition-opacity">
                   <div className="flex-1 bg-black"></div>
-                  {/* White stripe */}
                   <div className="flex-1 bg-white"></div>
-                  {/* Green stripe */}
                   <div className="flex-1 bg-green-600"></div>
-                  {/* Red triangle */}
                   <div 
                     className="absolute inset-0"
                     style={{
@@ -99,44 +77,38 @@ export default function Home() {
                   ></div>
                 </div>
 
-                {/* White overlay for readability */}
-                <div className="absolute inset-0 bg-white/90 group-hover:bg-white/85 transition-colors"></div>
-                
-                {/* Content - relative to appear above overlay */}
+                {/* Content */}
                 <div className="relative z-10">
-                  {/* Rank Badge */}
-                  <div className="absolute -top-8 right-0">
-                    <div className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg ${
-                      index === 0 ? 'bg-yellow-400 text-yellow-900' :
-                      index === 1 ? 'bg-gray-300 text-gray-700' :
-                      'bg-orange-300 text-orange-900'
+                  <div className="flex justify-between items-start mb-6">
+                    <div className={`w-14 h-14 rounded-2xl flex items-center justify-center font-bold text-2xl shadow-inner ${
+                      index === 0 ? 'bg-yellow-50 text-yellow-600 shadow-yellow-100' :
+                      index === 1 ? 'bg-slate-50 text-slate-500 shadow-slate-100' :
+                      'bg-orange-50 text-orange-600 shadow-orange-100'
                     }`}>
                       {index === 0 ? '🥇' : index === 1 ? '🥈' : '🥉'}
                     </div>
+                    {celebrity.featured && (
+                      <span className="px-3 py-1 bg-green-100 text-green-700 text-[10px] font-bold rounded-full uppercase tracking-widest border border-green-200">
+                        Featured Voice
+                      </span>
+                    )}
                   </div>
 
                   <div className="mt-4">
-                    <h3 className="text-2xl font-bold text-gray-900 mb-2 group-hover:text-green-600 transition">
+                    <h3 className="text-2xl font-bold text-gray-900 mb-2 group-hover:text-green-600 transition truncate">
                       {celebrity.name}
                     </h3>
-                    <p className="text-gray-600 mb-4">{celebrity.profession}</p>
+                    <p className="text-gray-500 font-medium mb-6">{celebrity.profession}</p>
 
-                    {/* Featured Badge */}
-                    {celebrity.featured && (
-                      <span className="inline-block px-3 py-1 bg-yellow-100 text-yellow-800 text-xs font-semibold rounded-full mb-4">
-                        ⭐ Featured
-                      </span>
-                    )}
-
-                    {/* Stats */}
-                    <div className="space-y-2 text-sm mt-6">
-                      <div className="flex justify-between items-center">
-                        <span className="text-gray-600">Confidence:</span>
-                        <span className="font-semibold text-gray-900">{celebrity.aiConfidence}%</span>
+                    {/* Stats Grid */}
+                    <div className="grid grid-cols-2 gap-4 pt-6 border-t border-gray-50">
+                      <div className="text-center p-3 rounded-xl bg-gray-50 group-hover:bg-green-50/50 transition-colors">
+                        <p className="text-[10px] text-gray-400 uppercase font-black tracking-tighter mb-1">Confidence</p>
+                        <p className="font-bold text-gray-900">{celebrity.aiConfidence}%</p>
                       </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-gray-600">Sources:</span>
-                        <span className="font-semibold text-gray-900">{celebrity.sources.length}</span>
+                      <div className="text-center p-3 rounded-xl bg-gray-50 group-hover:bg-green-50/50 transition-colors">
+                        <p className="text-[10px] text-gray-400 uppercase font-black tracking-tighter mb-1">Sources</p>
+                        <p className="font-bold text-gray-900">{celebrity.sources.length}</p>
                       </div>
                     </div>
                   </div>
@@ -144,32 +116,31 @@ export default function Home() {
               </div>
             ))}
           </div>
-
-          {/* View All Link */}
-          {/* <div className="text-center mt-12">
-            <Link
-              href="/featured"
-              className="inline-block px-8 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 font-semibold transition"
-            >
-              View All Supporters →
-            </Link>
-          </div> */}
         </div>
       )}
 
       {/* Footer Info */}
-      <div className="max-w-4xl mx-auto px-4 pt-16 pb-8 text-center">
-        <p className="text-sm text-gray-500 mb-4">
-          All information is AI-verified and sourced from credible outlets
+      <div className="max-w-4xl mx-auto px-4 py-24 text-center">
+        <div className="h-px w-24 bg-green-100 mx-auto mb-10"></div>
+        <p className="text-xs text-gray-400 mb-8 font-bold uppercase tracking-widest">
+          AI-verified evidence & source-backed transparency
         </p>
-        <a 
-          href="https://github.com/abdulsamad2002" 
-          target="_blank" 
-          rel="noopener noreferrer"
-          className="text-sm text-gray-600 hover:text-green-600 transition"
-        >
-          GitHub
-        </a>
+        <div className="flex justify-center gap-10">
+          <a 
+            href="https://github.com/abdulsamad2002" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="text-gray-400 hover:text-green-600 font-bold text-sm transition-colors duration-200"
+          >
+            GITHUB
+          </a>
+          <Link 
+            href="/about"
+            className="text-gray-400 hover:text-green-600 font-bold text-sm transition-colors duration-200"
+          >
+            ABOUT PROJECT
+          </Link>
+        </div>
       </div>
     </div>
   );
