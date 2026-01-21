@@ -15,7 +15,7 @@ const CampaignSchema = new mongoose.Schema({
 const Campaign = mongoose.models.Campaign || mongoose.model('Campaign', CampaignSchema);
 
 async function seed() {
-  const MONGODB_URI = "mongodb+srv://blackhawkalpha009_db_user:pwtDDgO9O5WgFp6M@passvault.haixfzb.mongodb.net/palestinestance";
+  const MONGODB_URI = process.env.MONGODB_URI;
 
   await mongoose.connect(MONGODB_URI);
 
